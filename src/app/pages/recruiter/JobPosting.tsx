@@ -24,12 +24,30 @@ export function JobPosting() {
     requirements: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitted(true);
-    }, 1000);
+    try {
+      const response = await fetch('/api/jobs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormData({
+          title: "",
+          department: "",
+          location: "",
+          type: "Full-time",
+          description: "",
+          requirements: ""
+        });
+      }
+    } catch (err) {
+      console.error("Failed to post job", err);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

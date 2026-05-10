@@ -1,57 +1,57 @@
 import { Link } from "react-router";
 import { Button } from "../components/ui/Button";
-import { Bot, Users, Briefcase } from "lucide-react";
+import { Bot, BriefcaseBusiness, Users, ArrowRight } from "lucide-react";
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8">
-      <div className="max-w-4xl text-center space-y-8">
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
-            <Bot className="w-10 h-10 text-white" />
+    <div className="min-h-screen bg-background flex items-center justify-center p-8">
+      <div className="max-w-5xl w-full grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-center">
+        <div className="space-y-6">
+          <div className="inline-flex items-center gap-3 rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground shadow-sm">
+            <Bot className="w-4 h-4 text-primary" />
+            AI recruitment platform for candidates and recruiters
           </div>
-          <h1 className="text-5xl font-bold">AI Recruit</h1>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
+              <BriefcaseBusiness className="w-9 h-9 text-white" />
+            </div>
+            <h1 className="text-5xl font-bold tracking-tight">CareerOS</h1>
+          </div>
+          <p className="text-xl text-muted-foreground max-w-2xl">
+            One shared platform for recruiters and candidates. Sign in once and we’ll route you to the right workspace automatically.
+          </p>
+          <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+            <span className="rounded-full border border-border bg-card px-4 py-2">Unified login</span>
+            <span className="rounded-full border border-border bg-card px-4 py-2">Role-based routing</span>
+            <span className="rounded-full border border-border bg-card px-4 py-2">Same platform, different dashboards</span>
+          </div>
+          <Link to="/login" className="inline-flex">
+            <Button variant="primary" className="mt-2">
+              Open shared login
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
         </div>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Autonomous AI-powered recruitment platform with multi-agent consensus system
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          <Link to="/admin/login" className="block">
-            <div className="bg-card border border-border rounded-xl p-8 hover:border-primary transition-colors cursor-pointer">
-              <Briefcase className="w-12 h-12 text-primary mb-4 mx-auto" />
-              <h3 className="text-xl font-semibold mb-2">Admin Portal</h3>
-              <p className="text-muted-foreground text-sm">
-                Manage users, AI models, and system settings
-              </p>
-              <Button variant="primary" className="mt-4 w-full">
-                Admin Login
-              </Button>
+
+        <div className="grid gap-4">
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Recruiters</p>
+                <h3 className="text-2xl font-semibold">Review talent faster</h3>
+              </div>
+              <Users className="w-8 h-8 text-primary" />
             </div>
-          </Link>
-          <Link to="/recruiter/login" className="block">
-            <div className="bg-card border border-border rounded-xl p-8 hover:border-primary transition-colors cursor-pointer">
-              <Users className="w-12 h-12 text-primary mb-4 mx-auto" />
-              <h3 className="text-xl font-semibold mb-2">Recruiter Portal</h3>
-              <p className="text-muted-foreground text-sm">
-                Review candidates and AI consensus reports
-              </p>
-              <Button variant="primary" className="mt-4 w-full">
-                Recruiter Login
-              </Button>
+          </div>
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Candidates</p>
+                <h3 className="text-2xl font-semibold">Track progress in one place</h3>
+              </div>
+              <Bot className="w-8 h-8 text-primary" />
             </div>
-          </Link>
-          <Link to="/candidate/login" className="block">
-            <div className="bg-card border border-border rounded-xl p-8 hover:border-primary transition-colors cursor-pointer">
-              <Bot className="w-12 h-12 text-primary mb-4 mx-auto" />
-              <h3 className="text-xl font-semibold mb-2">Candidate Portal</h3>
-              <p className="text-muted-foreground text-sm">
-                Apply, interview, and track your progress
-              </p>
-              <Button variant="primary" className="mt-4 w-full">
-                Candidate Login
-              </Button>
-            </div>
-          </Link>
+          </div>
         </div>
       </div>
     </div>
