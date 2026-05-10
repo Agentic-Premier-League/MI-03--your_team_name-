@@ -15,7 +15,7 @@ export function LandingPage() {
             <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
               <BriefcaseBusiness className="w-9 h-9 text-white" />
             </div>
-            <h1 className="text-5xl font-bold tracking-tight">CareerOS</h1>
+            <h1 className="text-5xl font-bold tracking-tight">HireGenie</h1>
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl">
             One shared platform for recruiters and candidates. Sign in once and we’ll route you to the right workspace automatically.

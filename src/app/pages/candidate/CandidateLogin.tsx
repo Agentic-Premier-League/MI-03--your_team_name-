@@ -14,7 +14,7 @@ function setPortalSession(email: string, name: string, role: "candidate" | "recr
     name,
     email,
   };
-  window.sessionStorage.setItem("careeros.portal.session", JSON.stringify(session));
+  window.sessionStorage.setItem("hiregenie.portal.session", JSON.stringify(session));
 }
 
 type Mode = "login" | "signup";
