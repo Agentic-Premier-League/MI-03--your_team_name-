@@ -8,7 +8,7 @@ import { Button } from "../../components/ui/Button";
 import {
   LayoutDashboard, Users, TrendingUp, Bell, Download, Play,
   FileSearch, ShieldAlert, MessageSquare, Video, Code,
-  BrainCircuit, UserCheck, Briefcase
+  BrainCircuit, UserCheck, Briefcase, UserCircle
 } from "lucide-react";
 
 const sidebarItems = [
@@ -17,6 +17,7 @@ const sidebarItems = [
   { label: "Post Job", href: "/recruiter/jobs/new", icon: Briefcase },
   { label: "Analytics", href: "/recruiter/analytics", icon: TrendingUp },
   { label: "Notifications", href: "/recruiter/notifications", icon: Bell },
+  { label: "Profile", href: "/recruiter/profile", icon: UserCircle },
 ];
 
 const aiAgents = [

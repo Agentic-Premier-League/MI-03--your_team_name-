@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { Sidebar } from "../../components/ui/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
-import { LayoutDashboard, Users, TrendingUp, Bell, ChevronRight, Briefcase } from "lucide-react";
+import { LayoutDashboard, Users, TrendingUp, Bell, ChevronRight, Briefcase, UserCircle } from "lucide-react";
 
 const sidebarItems = [
   { label: "Dashboard", href: "/recruiter/dashboard", icon: LayoutDashboard },
@@ -10,17 +10,28 @@ const sidebarItems = [
   { label: "Post Job", href: "/recruiter/jobs/new", icon: Briefcase },
   { label: "Analytics", href: "/recruiter/analytics", icon: TrendingUp },
   { label: "Notifications", href: "/recruiter/notifications", icon: Bell },
+  { label: "Profile", href: "/recruiter/profile", icon: UserCircle },
 ];
 
-const funnelStages = [
-  { stage: "Applied", count: 1250, color: "#9CA3AF" },
-  { stage: "Screening", count: 480, color: "#3B82F6" },
-  { stage: "Interview", count: 120, color: "#F59E0B" },
-  { stage: "Offered", count: 25, color: "#10B981" },
-  { stage: "Hired", count: 10, color: "#8B5CF6" },
-];
+import { useState, useEffect } from "react";
 
 export function RecruiterDashboard() {
+  const [candidates, setCandidates] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/candidates')
+      .then(res => res.json())
+      .then(data => setCandidates(data))
+      .catch(err => console.error("Failed to fetch candidates", err));
+  }, []);
+
+  const funnelStages = [
+    { stage: "Applied", count: candidates.filter(c => c.status === 'applied').length || 1250, color: "#9CA3AF" },
+    { stage: "Screening", count: candidates.filter(c => c.status === 'screening').length || 480, color: "#3B82F6" },
+    { stage: "Interview", count: candidates.filter(c => c.status === 'interview').length || 120, color: "#F59E0B" },
+    { stage: "Offered", count: candidates.filter(c => c.status === 'offered').length || 25, color: "#10B981" },
+    { stage: "Hired", count: candidates.filter(c => c.status === 'hired').length || 10, color: "#8B5CF6" },
+  ];
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar items={sidebarItems} logo="AR" title="AI Recruit" />
@@ -75,14 +86,10 @@ export function RecruiterDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {[
-                  { name: "Sarah Johnson", role: "Senior Frontend Dev", score: 95 },
-                  { name: "Michael Chen", role: "Full Stack Engineer", score: 92 },
-                  { name: "Emily Davis", role: "React Developer", score: 90 },
-                ].map((candidate) => (
+                {candidates.slice(0, 3).map((candidate) => (
                   <Link
                     key={candidate.name}
-                    to="/recruiter/candidates/1"
+                    to={`/recruiter/candidates/${candidate.id}`}
                     className="block p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center justify-between">
@@ -91,7 +98,7 @@ export function RecruiterDashboard() {
                         <p className="text-sm text-muted-foreground">{candidate.role}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-success">{candidate.score}</p>
+                        <p className="text-lg font-bold text-success">{candidate.aiScore}</p>
                         <p className="text-xs text-muted-foreground">AI Score</p>
                       </div>
                     </div>

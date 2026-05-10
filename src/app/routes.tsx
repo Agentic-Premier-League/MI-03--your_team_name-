@@ -18,7 +18,6 @@ import { AIMockInterview } from "./pages/candidate/AIMockInterview";
 import { CodingTests } from "./pages/candidate/CodingTests";
 import { PerformanceAnalytics } from "./pages/candidate/PerformanceAnalytics";
 import { CareerSuggestions } from "./pages/candidate/CareerSuggestions";
-import { JobBoard } from "./pages/candidate/JobBoard";
 import { RecruiterDashboard } from "./pages/recruiter/RecruiterDashboard";
 import { CandidateTable } from "./pages/recruiter/CandidateTable";
 import { CandidateDetail } from "./pages/recruiter/CandidateDetail";
@@ -26,6 +25,7 @@ import { AIConsensusReport } from "./pages/recruiter/AIConsensusReport";
 import { JobPosting } from "./pages/recruiter/JobPosting";
 import { RecruiterAnalytics } from "./pages/recruiter/RecruiterAnalytics";
 import { RecruiterNotifications } from "./pages/recruiter/RecruiterNotifications";
+import { RecruiterProfile } from "./pages/recruiter/RecruiterProfile";
 import { LandingPage } from "./pages/LandingPage";
 
 export const router = createBrowserRouter([
@@ -54,7 +54,6 @@ export const router = createBrowserRouter([
       { path: "login", Component: CandidateLogin },
       { path: "dashboard", Component: CandidateDashboard },
       { path: "profile", Component: ProfileSetup },
-      { path: "jobs", Component: JobBoard },
       { path: "applied-jobs", Component: AppliedJobs },
       { path: "referral-status", Component: ReferralStatus },
       { path: "mock-interview", Component: AIMockInterview },
@@ -75,6 +74,7 @@ export const router = createBrowserRouter([
       { path: "candidates/:id/consensus", Component: AIConsensusReport },
       { path: "analytics", Component: RecruiterAnalytics },
       { path: "notifications", Component: RecruiterNotifications },
+      { path: "profile", Component: RecruiterProfile },
     ],
   },
 ]);

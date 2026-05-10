@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Sidebar } from "../../components/ui/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
@@ -8,7 +8,7 @@ import { Badge } from "../../components/ui/Badge";
 import { StatusBadge } from "../../components/StatusBadge";
 import {
   LayoutDashboard, Users, TrendingUp, Bell, Search,
-  Calendar, MoreVertical, Eye, Briefcase
+  Calendar, MoreVertical, Eye, Briefcase, UserCircle
 } from "lucide-react";
 
 const sidebarItems = [
@@ -17,62 +17,20 @@ const sidebarItems = [
   { label: "Post Job", href: "/recruiter/jobs/new", icon: Briefcase },
   { label: "Analytics", href: "/recruiter/analytics", icon: TrendingUp },
   { label: "Notifications", href: "/recruiter/notifications", icon: Bell },
-];
-
-const candidates = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    email: "sarah.j@email.com",
-    source: "Referral",
-    matchPercent: 95,
-    aiScore: 92,
-    trustScore: 88,
-    status: "shortlisted" as const,
-    appliedDate: "2024-05-08",
-    role: "Senior Frontend Developer"
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    email: "m.chen@email.com",
-    source: "Applied",
-    matchPercent: 88,
-    aiScore: 90,
-    trustScore: 85,
-    status: "interview" as const,
-    appliedDate: "2024-05-07",
-    role: "Full Stack Engineer"
-  },
-  {
-    id: 3,
-    name: "Emily Davis",
-    email: "emily.d@email.com",
-    source: "LinkedIn",
-    matchPercent: 92,
-    aiScore: 89,
-    trustScore: 90,
-    status: "review" as const,
-    appliedDate: "2024-05-06",
-    role: "React Developer"
-  },
-  {
-    id: 4,
-    name: "David Wilson",
-    email: "d.wilson@email.com",
-    source: "Applied",
-    matchPercent: 78,
-    aiScore: 75,
-    trustScore: 80,
-    status: "screening" as const,
-    appliedDate: "2024-05-05",
-    role: "Frontend Developer"
-  },
+  { label: "Profile", href: "/recruiter/profile", icon: UserCircle },
 ];
 
 export function CandidateTable() {
+  const [candidates, setCandidates] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState("all");
+
+  useEffect(() => {
+    fetch('/api/candidates')
+      .then(res => res.json())
+      .then(data => setCandidates(data))
+      .catch(err => console.error("Failed to fetch candidates", err));
+  }, []);
 
   const filteredCandidates = candidates.filter((candidate) => {
     const matchesSearch =
