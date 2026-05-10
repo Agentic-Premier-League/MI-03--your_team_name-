@@ -49,7 +49,7 @@ export function LoginPage() {
               Sign in once. Get the right dashboard instantly.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-              Enter your recruiter ID, candidate ID, or email and CareerOS will open the correct workspace automatically.
+              Enter your recruiter ID, candidate ID, or email and HireGenie will open the correct workspace automatically.
             </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -73,7 +73,7 @@ export function LoginPage() {
 
           <Card className="border-border/70 shadow-xl">
             <CardHeader>
-              <CardTitle className="text-2xl">Login to CareerOS</CardTitle>
+              <CardTitle className="text-2xl">Login to HireGenie</CardTitle>
               <p className="text-sm text-muted-foreground">
                 Use your portal ID or email. Example IDs: <span className="font-medium">recruiter-001</span> or <span className="font-medium">candidate-001</span>.
               </p>

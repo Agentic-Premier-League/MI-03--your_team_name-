@@ -15,7 +15,7 @@ export interface PortalSession {
   email: string;
 }
 
-const SESSION_KEY = "careeros.portal.session";
+const SESSION_KEY = "hiregenie.portal.session";
 
 const PORTAL_USERS: PortalUser[] = [
   {
