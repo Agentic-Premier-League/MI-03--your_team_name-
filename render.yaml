@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: careeros
+    env: node
+    plan: free
+    buildCommand: npm install ; npm --prefix server install ; npm run build
+    startCommand: npm --prefix server start
+    envVars:
+      - key: MONGO_URI
+        sync: false

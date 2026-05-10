@@ -1,17 +1,21 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { connectDB } = require('./db');
 const Job = require('./models/Job');
 const Candidate = require('./models/Candidate');
 
 const app = express();
-const PORT = 5001;
+const PORT = process.env.PORT || 5001;
 
 // Connect to MongoDB
 connectDB();
 
 app.use(cors());
 app.use(express.json());
+
+const distPath = path.resolve(__dirname, '../dist');
+app.use(express.static(distPath));
 
 // Seed Initial Candidates if empty
 async function seedCandidates() {
@@ -94,6 +98,10 @@ app.patch('/api/candidates/:id', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Failed to update candidate status' });
   }
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
