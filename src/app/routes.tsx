@@ -18,6 +18,7 @@ import { AIMockInterview } from "./pages/candidate/AIMockInterview";
 import { CodingTests } from "./pages/candidate/CodingTests";
 import { PerformanceAnalytics } from "./pages/candidate/PerformanceAnalytics";
 import { CareerSuggestions } from "./pages/candidate/CareerSuggestions";
+import { JobBoard } from "./pages/candidate/JobBoard";
 import { RecruiterDashboard } from "./pages/recruiter/RecruiterDashboard";
 import { CandidateTable } from "./pages/recruiter/CandidateTable";
 import { CandidateDetail } from "./pages/recruiter/CandidateDetail";
@@ -53,6 +54,7 @@ export const router = createBrowserRouter([
       { path: "login", Component: CandidateLogin },
       { path: "dashboard", Component: CandidateDashboard },
       { path: "profile", Component: ProfileSetup },
+      { path: "jobs", Component: JobBoard },
       { path: "applied-jobs", Component: AppliedJobs },
       { path: "referral-status", Component: ReferralStatus },
       { path: "mock-interview", Component: AIMockInterview },
