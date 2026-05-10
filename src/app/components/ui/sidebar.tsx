@@ -719,6 +719,33 @@ type AppSidebarProps = {
 function AppSidebar({ items, logo, title }: AppSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const [userName, setUserName] = React.useState("Loading...");
+
+  const fetchProfile = () => {
+    fetch('/api/recruiter/profile')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.name) {
+          setUserName(data.name);
+        } else {
+          setUserName("Recruiter");
+        }
+      })
+      .catch(() => setUserName("Recruiter"));
+  };
+
+  React.useEffect(() => {
+    // Only fetch profile if we are in the recruiter portal
+    if (location.pathname.startsWith('/recruiter')) {
+      fetchProfile();
+    } else {
+      setUserName("Admin"); // Fallback for other portals
+    }
+
+    // Listen for custom profile update event
+    window.addEventListener("profileUpdated", fetchProfile);
+    return () => window.removeEventListener("profileUpdated", fetchProfile);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     // In a real app, clear auth tokens/session here
@@ -758,8 +785,17 @@ function AppSidebar({ items, logo, title }: AppSidebarProps) {
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="px-3 py-4 border-t border-sidebar-border">
+      {/* Profile & Logout */}
+      <div className="px-3 py-4 border-t border-sidebar-border space-y-2">
+        <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-sidebar-accent/30 rounded-lg">
+          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+            {userName.charAt(0).toUpperCase()}
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-sidebar-foreground truncate max-w-[140px]">{userName}</span>
+            <span className="text-xs text-muted-foreground">Recruiter</span>
+          </div>
+        </div>
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/80 hover:bg-destructive/15 hover:text-destructive transition-colors"

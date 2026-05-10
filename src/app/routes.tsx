@@ -16,6 +16,7 @@ import { AIConsensusReport } from "./pages/recruiter/AIConsensusReport";
 import { JobPosting } from "./pages/recruiter/JobPosting";
 import { RecruiterAnalytics } from "./pages/recruiter/RecruiterAnalytics";
 import { RecruiterNotifications } from "./pages/recruiter/RecruiterNotifications";
+import { RecruiterProfile } from "./pages/recruiter/RecruiterProfile";
 import { LandingPage } from "./pages/LandingPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 

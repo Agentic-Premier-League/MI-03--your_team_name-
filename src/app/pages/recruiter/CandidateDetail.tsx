@@ -9,7 +9,7 @@ import {
   LayoutDashboard, Users, TrendingUp, Bell, FileText, Download,
   Mail, Phone, MapPin, Linkedin, Github, Globe, CheckCircle,
   XCircle, Clock, FileSearch, ShieldAlert, MessageSquare,
-  Video, Code, BrainCircuit, UserCheck, Briefcase
+  Video, Code, BrainCircuit, UserCheck, Briefcase, UserCircle
 } from "lucide-react";
 
 const sidebarItems = [
@@ -18,6 +18,7 @@ const sidebarItems = [
   { label: "Post Job", href: "/recruiter/jobs/new", icon: Briefcase },
   { label: "Analytics", href: "/recruiter/analytics", icon: TrendingUp },
   { label: "Notifications", href: "/recruiter/notifications", icon: Bell },
+  { label: "Profile", href: "/recruiter/profile", icon: UserCircle },
 ];
 
 const aiAgents = [

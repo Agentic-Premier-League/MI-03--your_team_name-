@@ -1,6 +1,6 @@
 import { Sidebar } from "../../components/ui/Sidebar";
 import { Card } from "../../components/ui/Card";
-import { LayoutDashboard, Users, TrendingUp, Bell, Briefcase } from "lucide-react";
+import { LayoutDashboard, Users, TrendingUp, Bell, Briefcase, UserCircle } from "lucide-react";
 
 const sidebarItems = [
   { label: "Dashboard", href: "/recruiter/dashboard", icon: LayoutDashboard },
@@ -8,6 +8,7 @@ const sidebarItems = [
   { label: "Post Job", href: "/recruiter/jobs/new", icon: Briefcase },
   { label: "Analytics", href: "/recruiter/analytics", icon: TrendingUp },
   { label: "Notifications", href: "/recruiter/notifications", icon: Bell },
+  { label: "Profile", href: "/recruiter/profile", icon: UserCircle },
 ];
 
 export function RecruiterAnalytics() {

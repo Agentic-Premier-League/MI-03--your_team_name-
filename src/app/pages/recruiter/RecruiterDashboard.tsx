@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { Sidebar } from "../../components/ui/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
-import { LayoutDashboard, Users, TrendingUp, Bell, ChevronRight, Briefcase } from "lucide-react";
+import { LayoutDashboard, Users, TrendingUp, Bell, ChevronRight, Briefcase, UserCircle } from "lucide-react";
 
 const sidebarItems = [
   { label: "Dashboard", href: "/recruiter/dashboard", icon: LayoutDashboard },
@@ -10,6 +10,7 @@ const sidebarItems = [
   { label: "Post Job", href: "/recruiter/jobs/new", icon: Briefcase },
   { label: "Analytics", href: "/recruiter/analytics", icon: TrendingUp },
   { label: "Notifications", href: "/recruiter/notifications", icon: Bell },
+  { label: "Profile", href: "/recruiter/profile", icon: UserCircle },
 ];
 
 import { useState, useEffect } from "react";

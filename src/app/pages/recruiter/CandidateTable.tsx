@@ -8,7 +8,7 @@ import { Badge } from "../../components/ui/Badge";
 import { StatusBadge } from "../../components/StatusBadge";
 import {
   LayoutDashboard, Users, TrendingUp, Bell, Search,
-  Calendar, MoreVertical, Eye, Briefcase
+  Calendar, MoreVertical, Eye, Briefcase, UserCircle
 } from "lucide-react";
 
 const sidebarItems = [
