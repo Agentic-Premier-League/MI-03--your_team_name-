@@ -34,6 +34,10 @@ const SKILL_ALIASES: Record<string, string[]> = {
   pytorch: ["pytorch", "torch"],
   devops: ["devops", "ci/cd", "cicd", "pipeline"],
   figma: ["figma", "sketch", "adobe xd", "ui design"],
+  "rest apis": ["rest api", "rest apis", "restful", "rest"],
+  redis: ["redis", "cache"],
+  jwt: ["jwt", "json web token"],
+  testing: ["jest", "cypress", "pytest", "junit", "testing", "tdd"],
 };
 
 /** Normalize a skill name to a canonical key */
@@ -50,7 +54,7 @@ export function calculateMatchScore(
   candidateSkills: string[],
   job: Job
 ): number {
-  if (candidateSkills.length === 0) return Math.floor(Math.random() * 20 + 30); // baseline 30-50%
+  if (candidateSkills.length === 0) return Math.floor(Math.random() * 20 + 30);
 
   const normCandidateSkills = candidateSkills.map(normalizeSkill);
   const normRequired = job.requiredSkills.map(normalizeSkill);
@@ -67,7 +71,6 @@ export function calculateMatchScore(
   }
 
   const rawScore = totalWeight > 0 ? (score / totalWeight) * 100 : 50;
-  // Clamp between 30 and 98
   return Math.round(Math.max(30, Math.min(98, rawScore)));
 }
 
@@ -93,11 +96,6 @@ export function getRecommendedJobs(
 
 // ─── Resume Analysis ──────────────────────────────────────────────────────────
 
-/**
- * Simulate AI resume analysis.
- * In a real implementation, this would call an LLM/NLP API.
- * Here we parse the filename and provided skills to generate realistic feedback.
- */
 export function analyzeResume(
   fileName: string,
   candidateSkills: string[],
@@ -105,11 +103,9 @@ export function analyzeResume(
 ): ResumeAnalysis {
   const expYears = parseInt(experience) || 1;
 
-  // Generate a score based on skills count and experience
   const baseScore = Math.min(95, 40 + candidateSkills.length * 5 + expYears * 3);
   const score = Math.max(40, baseScore + Math.floor(Math.random() * 10 - 5));
 
-  // Determine strengths based on skills
   const strengths: string[] = [];
   const hasReact = candidateSkills.some((s) =>
     ["react", "reactjs"].includes(s.toLowerCase())
@@ -128,7 +124,6 @@ export function analyzeResume(
   if (candidateSkills.length >= 5) strengths.push("Diverse skill set shows adaptability");
   if (strengths.length === 0) strengths.push("Clear and structured presentation of technical skills");
 
-  // Generate missing skills suggestions
   const commonHighDemandSkills = [
     "TypeScript", "AWS", "Docker", "GraphQL", "Redis",
     "System Design", "Leadership", "Testing (Jest/Cypress)"
@@ -137,7 +132,6 @@ export function analyzeResume(
     (s) => !candidateSkills.map((cs) => cs.toLowerCase()).includes(s.toLowerCase())
   ).slice(0, 4);
 
-  // Improvement suggestions
   const suggestions = [
     "Add quantifiable achievements (e.g., 'Improved load time by 40%')",
     "Include links to GitHub projects or live portfolio",
@@ -146,7 +140,6 @@ export function analyzeResume(
     missingSkills.length > 0 ? `Consider upskilling in: ${missingSkills.slice(0, 2).join(", ")}` : "Add cloud certifications to stand out"
   ].filter(Boolean);
 
-  // Recommended roles based on skills
   const recommendedRoles: string[] = [];
   if (hasReact && hasBackend) recommendedRoles.push("Full Stack Engineer");
   if (hasReact) recommendedRoles.push("Frontend Developer");
@@ -171,7 +164,74 @@ export function analyzeResume(
 export type SkillGapResult = {
   matched: string[];
   missing: string[];
-  learningPath: Array<{ skill: string; resource: string; timeEstimate: string }>;
+  learningPath: Array<{ skill: string; resource: string; timeEstimate: string; url?: string }>;
+};
+
+// Comprehensive resource map — covers every skill appearing in mockJobs
+const RESOURCES: Record<string, { resource: string; time: string; url: string }> = {
+  // Frontend
+  typescript: { resource: "Total TypeScript (totaltypescript.com) — free interactive course", time: "2-3 weeks", url: "https://www.totaltypescript.com" },
+  react: { resource: "React official docs (react.dev) + Scrimba React course", time: "3-4 weeks", url: "https://react.dev" },
+  javascript: { resource: "javascript.info — The Modern JavaScript Tutorial (free)", time: "4-6 weeks", url: "https://javascript.info" },
+  "next.js": { resource: "Next.js official tutorial (nextjs.org/learn)", time: "2-3 weeks", url: "https://nextjs.org/learn" },
+  "vue.js": { resource: "Vue Mastery free intro + official Vue 3 docs", time: "2-3 weeks", url: "https://vuemastery.com" },
+  angular: { resource: "Angular official 'Tour of Heroes' tutorial + Scrimba Angular course", time: "3-4 weeks", url: "https://angular.dev/tutorials/learn-angular" },
+  css: { resource: "Kevin Powell YouTube (free) + CSS Tricks complete guide", time: "2-4 weeks", url: "https://css-tricks.com" },
+  html: { resource: "MDN Web Docs HTML guide (free)", time: "1-2 weeks", url: "https://developer.mozilla.org/en-US/docs/Web/HTML" },
+  figma: { resource: "Figma's own tutorials at help.figma.com + DesignWithFigma YouTube", time: "1-2 weeks", url: "https://help.figma.com" },
+  graphql: { resource: "GraphQL.org official tutorials + The Road to GraphQL (free PDF)", time: "1-2 weeks", url: "https://graphql.org/learn" },
+  "react native": { resource: "React Native official docs + Expo Getting Started tutorial", time: "3-4 weeks", url: "https://reactnative.dev/docs/getting-started" },
+  "tailwind css": { resource: "Tailwind CSS official docs + Scrimba Tailwind CSS course", time: "1 week", url: "https://tailwindcss.com/docs" },
+
+  // Backend & APIs
+  nodejs: { resource: "Node.js official learning path + The Odin Project Node module", time: "3-4 weeks", url: "https://nodejs.org/en/learn" },
+  express: { resource: "Express.js official guide + The Odin Project Node/Express path", time: "1-2 weeks", url: "https://expressjs.com/en/guide/routing.html" },
+  python: { resource: "Python.org tutorial + Real Python (realpython.com)", time: "2-4 weeks", url: "https://realpython.com" },
+  java: { resource: "Codecademy Learn Java + Baeldung.com Spring Boot guides", time: "4-6 weeks", url: "https://www.baeldung.com" },
+  fastapi: { resource: "FastAPI official tutorial (fastapi.tiangolo.com) — very beginner-friendly", time: "1-2 weeks", url: "https://fastapi.tiangolo.com/tutorial" },
+  django: { resource: "Django Girls Tutorial + official Django docs (djangoproject.com)", time: "2-3 weeks", url: "https://docs.djangoproject.com/en/stable/intro/tutorial01" },
+  "rest apis": { resource: "Postman Learning Center + freeCodeCamp REST API tutorial", time: "1-2 weeks", url: "https://learning.postman.com" },
+  jwt: { resource: "jwt.io introduction + Auth0 blog: 'JWT Authentication Tutorial'", time: "3-5 days", url: "https://jwt.io/introduction" },
+
+  // Databases
+  postgresql: { resource: "PostgreSQL Tutorial (postgresqltutorial.com) + Use the Index, Luke!", time: "1-2 weeks", url: "https://www.postgresqltutorial.com" },
+  mongodb: { resource: "MongoDB University free courses (learn.mongodb.com)", time: "1-2 weeks", url: "https://learn.mongodb.com" },
+  mysql: { resource: "MySQL Tutorial (mysqltutorial.org) + W3Schools SQL exercises", time: "1-2 weeks", url: "https://www.mysqltutorial.org" },
+  redis: { resource: "Redis University free online courses (university.redis.com)", time: "1 week", url: "https://university.redis.com" },
+  sql: { resource: "SQLZoo free interactive exercises + Mode SQL Tutorial", time: "1-2 weeks", url: "https://sqlzoo.net" },
+  firebase: { resource: "Firebase official docs + Fireship.io YouTube channel", time: "1-2 weeks", url: "https://firebase.google.com/docs" },
+  elasticsearch: { resource: "Elastic official getting started + Elasticsearch 'Definitive Guide' (free online)", time: "2-3 weeks", url: "https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html" },
+
+  // Cloud & DevOps
+  aws: { resource: "AWS Skill Builder free tier + A Cloud Guru AWS Developer Associate", time: "4-6 weeks", url: "https://explore.skillbuilder.aws" },
+  azure: { resource: "Microsoft Learn Azure Fundamentals path (free, with badges)", time: "3-4 weeks", url: "https://learn.microsoft.com/azure" },
+  gcp: { resource: "Google Cloud Skills Boost free tier + Qwiklabs hands-on labs", time: "3-4 weeks", url: "https://cloudskillsboost.google" },
+  docker: { resource: "Docker official Getting Started tutorial + TechWorld with Nana YouTube", time: "1-2 weeks", url: "https://docs.docker.com/get-started" },
+  kubernetes: { resource: "Kubernetes.io interactive tutorial + TechWorld with Nana K8s playlist", time: "3-4 weeks", url: "https://kubernetes.io/docs/tutorials/kubernetes-basics" },
+  terraform: { resource: "HashiCorp Learn Terraform tutorials (developer.hashicorp.com)", time: "2-3 weeks", url: "https://developer.hashicorp.com/terraform/tutorials" },
+  "ci/cd": { resource: "GitHub Actions official docs + GitLab CI/CD getting started guide", time: "1-2 weeks", url: "https://docs.github.com/en/actions" },
+  linux: { resource: "The Linux Command Line free online book (linuxcommand.org)", time: "2-3 weeks", url: "https://linuxcommand.org/tlcl.php" },
+  devops: { resource: "DevOps Roadmap (roadmap.sh/devops) + KodeKloud free tier labs", time: "4-6 weeks", url: "https://roadmap.sh/devops" },
+  "solution design": { resource: "System Design Primer on GitHub + ByteByteGo YouTube channel", time: "4-6 weeks", url: "https://github.com/donnemartin/system-design-primer" },
+  "cloud architecture": { resource: "AWS Well-Architected Framework + Google Cloud Architecture Center", time: "4-6 weeks", url: "https://aws.amazon.com/architecture/well-architected" },
+
+  // AI / ML / Data
+  machine_learning: { resource: "Andrew Ng's ML Specialization on Coursera (audit free) + fast.ai", time: "8-12 weeks", url: "https://www.coursera.org/specializations/machine-learning-introduction" },
+  tensorflow: { resource: "TensorFlow official tutorials + DeepLearning.AI TF course (Coursera audit)", time: "4-6 weeks", url: "https://www.tensorflow.org/tutorials" },
+  pytorch: { resource: "PyTorch 60-minute blitz tutorial + fast.ai Practical Deep Learning (free)", time: "4-6 weeks", url: "https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html" },
+  "data science": { resource: "Kaggle free courses (Python, Pandas, ML) + Towards Data Science", time: "6-10 weeks", url: "https://www.kaggle.com/learn" },
+  "apache spark": { resource: "Databricks Community Edition free + Spark by Examples (sparkbyexamples.com)", time: "3-4 weeks", url: "https://sparkbyexamples.com" },
+  "data engineering": { resource: "DataTalks.Club Data Engineering Zoomcamp (free cohort on GitHub)", time: "8-10 weeks", url: "https://github.com/DataTalksClub/data-engineering-zoomcamp" },
+
+  // Tools
+  git: { resource: "Pro Git book free at git-scm.com + GitHub's Git tutorial", time: "3-5 days", url: "https://git-scm.com/book/en/v2" },
+  testing: { resource: "Jest getting started docs + Cypress real-world-app + Testing Library guides", time: "1-2 weeks", url: "https://jestjs.io/docs/getting-started" },
+  "system design": { resource: "System Design Primer on GitHub (free) + ByteByteGo YouTube", time: "4-8 weeks", url: "https://github.com/donnemartin/system-design-primer" },
+  microservices: { resource: "Microservices.io patterns guide + Sam Newman 'Building Microservices' key chapters", time: "3-4 weeks", url: "https://microservices.io/patterns/index.html" },
+  "user research": { resource: "Google UX Design Certificate on Coursera (audit free) + NN/g articles", time: "2-3 weeks", url: "https://www.coursera.org/professional-certificates/google-ux-design" },
+
+  // Fallback
+  default: { resource: "Official docs + freeCodeCamp.org + roadmap.sh for structured learning paths", time: "1-3 weeks", url: "https://roadmap.sh" },
 };
 
 export function analyzeSkillGap(
@@ -179,33 +239,33 @@ export function analyzeSkillGap(
   job: Job
 ): SkillGapResult {
   const normCandidateSkills = candidateSkills.map(normalizeSkill);
+
   const matched = job.requiredSkills.filter((s) =>
     normCandidateSkills.includes(normalizeSkill(s))
   );
-  const missing = [
-    ...job.requiredSkills.filter((s) => !normCandidateSkills.includes(normalizeSkill(s))),
-    ...job.niceToHaveSkills.filter((s) => !normCandidateSkills.includes(normalizeSkill(s))),
-  ].slice(0, 5);
-
-  const RESOURCES: Record<string, { resource: string; time: string }> = {
-    typescript: { resource: "TypeScript Official Docs + Total TypeScript course", time: "2-3 weeks" },
-    aws: { resource: "AWS Certified Developer Associate (A Cloud Guru)", time: "4-6 weeks" },
-    docker: { resource: "Docker & Kubernetes: The Complete Guide (Udemy)", time: "2-3 weeks" },
-    graphql: { resource: "GraphQL.org tutorials + The Road to GraphQL", time: "1-2 weeks" },
-    kubernetes: { resource: "Kubernetes Up & Running (O'Reilly)", time: "3-4 weeks" },
-    python: { resource: "Python.org tutorials + Real Python", time: "2-4 weeks" },
-    machine_learning: { resource: "fast.ai + Andrew Ng's ML Specialization", time: "8-12 weeks" },
-    postgresql: { resource: "PostgreSQL Tutorial + Use the Index, Luke!", time: "1-2 weeks" },
-    default: { resource: "Official documentation + freeCodeCamp / YouTube", time: "1-3 weeks" },
-  };
+  const missingRequired = job.requiredSkills.filter(
+    (s) => !normCandidateSkills.includes(normalizeSkill(s))
+  );
+  const missingNiceToHave = job.niceToHaveSkills.filter(
+    (s) => !normCandidateSkills.includes(normalizeSkill(s))
+  );
+  // Up to 3 required + 2 nice-to-have missing skills in learning path
+  const missing = [...missingRequired, ...missingNiceToHave].slice(0, 5);
 
   const learningPath = missing.map((skill) => {
     const key = normalizeSkill(skill);
-    const res = RESOURCES[key] ?? RESOURCES.default;
+    // Try exact key, then partial match
+    const res =
+      RESOURCES[key] ??
+      Object.entries(RESOURCES).find(
+        ([k]) => k !== "default" && (k.includes(key) || key.includes(k))
+      )?.[1] ??
+      RESOURCES.default;
     return {
       skill,
       resource: res.resource,
       timeEstimate: res.time,
+      url: res.url,
     };
   });
 
@@ -241,7 +301,7 @@ const RESPONSES: Record<ChatIntent, string[]> = {
     "✅ **Resume Structure:** Lead with a 2-line summary, then Skills, Experience (most recent first), Projects, and Education. Keep it to 1-2 pages.",
   ],
   interview: [
-    "🎯 **STAR Method:** Structure behavioral answers as Situation → Task → Action → Result. This works for '95% of 'Tell me about a time...' questions.",
+    "🎯 **STAR Method:** Structure behavioral answers as Situation → Task → Action → Result. This works for 95% of 'Tell me about a time...' questions.",
     "💻 **Technical Interviews:** Practice on LeetCode (Easy/Medium). For system design, study: Scaling, Caching, Database indexing, and Load balancing.",
     "🤝 **Culture Fit:** Prepare 3 strong stories about collaboration, handling failure, and major achievements. Research the company's mission and recent news.",
   ],

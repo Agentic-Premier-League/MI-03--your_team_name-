@@ -7,7 +7,8 @@ import { Badge } from "../../components/ui/badge";
 import {
   LayoutDashboard, FileText, Briefcase, TrendingUp, Video,
   Code, MessageCircle, Target, CheckCircle, X, BookOpen,
-  ExternalLink, Sparkles, ChevronRight
+  ExternalLink, Sparkles, ChevronRight, AlertCircle, Star,
+  Zap
 } from "lucide-react";
 import { getProfile } from "../../lib/candidateStore";
 import { getRecommendedJobs, analyzeSkillGap, type SkillGapResult } from "../../lib/aiEngine";
@@ -24,108 +25,52 @@ const sidebarItems = [
   { label: "Coding Tests", href: "/candidate/coding-tests", icon: Code },
 ];
 
-function SkillGapCard({ result }: { result: SkillGapResult }) {
-  const total = result.matched.length + result.missing.length;
-  const matchPct = total === 0 ? 0 : Math.round((result.matched.length / total) * 100);
+type ScoredJob = Job & { matchScore: number; matchedSkills: string[]; missingSkills: string[] };
 
+function CoverageBar({ matched, total }: { matched: number; total: number }) {
+  const pct = total === 0 ? 0 : Math.round((matched / total) * 100);
+  const color =
+    pct >= 70 ? "bg-success" : pct >= 40 ? "bg-warning" : "bg-destructive/70";
+  const textColor =
+    pct >= 70 ? "text-success" : pct >= 40 ? "text-warning" : "text-destructive";
   return (
-    <div className="space-y-4">
-      {/* Match percentage */}
-      <div className="p-4 bg-muted/50 rounded-xl border border-border">
-        <div className="flex items-center justify-between mb-2">
-          <span className="font-medium text-sm">Skill Coverage</span>
-          <span className={`font-bold text-lg ${matchPct >= 70 ? "text-success" : matchPct >= 40 ? "text-warning" : "text-destructive"}`}>
-            {matchPct}%
-          </span>
-        </div>
-        <div className="w-full bg-muted rounded-full h-2">
-          <div
-            className={`h-2 rounded-full transition-all ${matchPct >= 70 ? "bg-success" : matchPct >= 40 ? "bg-warning" : "bg-destructive"}`}
-            style={{ width: `${matchPct}%` }}
-          />
-        </div>
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-sm text-muted-foreground">Skill Coverage</span>
+        <span className={`font-bold text-lg ${textColor}`}>{pct}%</span>
       </div>
-
-      {/* Matched skills */}
-      {result.matched.length > 0 && (
-        <div>
-          <h4 className="text-sm font-semibold text-success flex items-center gap-1.5 mb-2">
-            <CheckCircle className="w-4 h-4" /> You have ({result.matched.length})
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {result.matched.map((s) => (
-              <span key={s} className="px-2.5 py-1 bg-success/10 text-success border border-success/20 rounded-full text-xs font-medium">
-                ✓ {s}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Missing skills */}
-      {result.missing.length > 0 && (
-        <div>
-          <h4 className="text-sm font-semibold text-destructive flex items-center gap-1.5 mb-2">
-            <X className="w-4 h-4" /> Need to learn ({result.missing.length})
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {result.missing.map((s) => (
-              <span key={s} className="px-2.5 py-1 bg-destructive/10 text-destructive border border-destructive/20 rounded-full text-xs font-medium">
-                ✗ {s}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Learning path */}
-      {result.learningPath.length > 0 && (
-        <div>
-          <h4 className="text-sm font-semibold flex items-center gap-1.5 mb-3">
-            <BookOpen className="w-4 h-4 text-primary" /> Recommended Learning Path
-          </h4>
-          <div className="space-y-2">
-            {result.learningPath.map((item, i) => (
-              <div key={item.skill} className="p-3 bg-muted/40 rounded-lg border border-border text-sm">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="w-5 h-5 bg-primary/20 text-primary rounded-full flex items-center justify-center text-xs font-bold">
-                    {i + 1}
-                  </span>
-                  <span className="font-medium">{item.skill}</span>
-                  <Badge variant="secondary" className="text-xs ml-auto">{item.timeEstimate}</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground pl-7">{item.resource}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
+        <div
+          className={`h-2.5 rounded-full transition-all duration-700 ${color}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <p className="text-xs text-muted-foreground mt-1">
+        {matched} of {total} required skills matched
+      </p>
     </div>
   );
 }
 
 export function PerformanceAnalytics() {
   const profile = getProfile();
-  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [topJobs, setTopJobs] = useState<ScoredJob[]>([]);
+  const [selectedJob, setSelectedJob] = useState<ScoredJob | null>(null);
   const [skillGap, setSkillGap] = useState<SkillGapResult | null>(null);
-  const [topJobs, setTopJobs] = useState<Array<Job & { matchScore: number; matchedSkills: string[]; missingSkills: string[] }>>([]);
 
   useEffect(() => {
     const skills = profile?.skills ?? [];
-    const recommended = getRecommendedJobs(skills, MOCK_JOBS).slice(0, 6);
-    setTopJobs(recommended);
-    // Auto-select the top job
-    if (recommended.length > 0) {
-      const topJob = recommended[0];
-      setSelectedJobId(topJob.id);
-      setSkillGap(analyzeSkillGap(skills, topJob));
+    const scored = getRecommendedJobs(skills, MOCK_JOBS).slice(0, 8) as ScoredJob[];
+    setTopJobs(scored);
+    if (scored.length > 0) {
+      setSelectedJob(scored[0]);
+      setSkillGap(analyzeSkillGap(skills, scored[0]));
     }
   }, []);
 
-  const handleSelectJob = (job: typeof topJobs[0]) => {
-    setSelectedJobId(job.id);
-    const skills = profile?.skills ?? [];
-    setSkillGap(analyzeSkillGap(skills, job));
+  const handleSelectJob = (job: ScoredJob) => {
+    setSelectedJob(job);
+    setSkillGap(analyzeSkillGap(profile?.skills ?? [], job));
   };
 
   const hasSkills = (profile?.skills?.length ?? 0) > 0;
@@ -134,159 +79,299 @@ export function PerformanceAnalytics() {
     <div className="flex min-h-screen bg-background">
       <Sidebar items={sidebarItems} logo="HG" title="HireGenie AI" />
       <div className="flex-1 p-8 overflow-auto">
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-1 flex items-center gap-2">
             <Target className="w-7 h-7 text-primary" />
             Skill Gap Analysis
           </h1>
           <p className="text-muted-foreground">
-            See how your skills stack up against top job requirements — and what to learn next
+            Select a target job to see exactly which skills you have, what you're missing, and how to close the gap.
           </p>
         </div>
 
+        {/* No skills state */}
         {!hasSkills ? (
           <Card className="border border-border/60">
             <CardContent className="p-12 text-center">
-              <Target className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <AlertCircle className="w-12 h-12 text-warning mx-auto mb-4" />
               <h3 className="font-semibold text-lg mb-2">Add Your Skills First</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Add your skills in the Profile section to get a personalized skill gap analysis.
+              <p className="text-muted-foreground text-sm mb-5">
+                Add your skills in the Profile section to get a personalised skill gap analysis against any job.
               </p>
               <Link to="/candidate/profile">
                 <Button className="gap-2">
                   <FileText className="w-4 h-4" />
-                  Go to Profile
+                  Complete Profile
                 </Button>
               </Link>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Job selector */}
-            <div>
-              <Card className="border border-border/60">
-                <CardHeader>
-                  <CardTitle className="text-base">Select a Target Job</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Click on a job to see your skill gap analysis
-                  </p>
-                  <div className="space-y-2">
-                    {topJobs.map((job) => (
-                      <button
-                        key={job.id}
-                        onClick={() => handleSelectJob(job)}
-                        className={`w-full text-left p-3 rounded-xl border transition-all ${
-                          selectedJobId === job.id
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/40 hover:bg-muted/30"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium text-sm">{job.title}</p>
-                            <p className="text-xs text-muted-foreground">{job.company}</p>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <span className={`font-bold text-sm ${job.matchScore >= 70 ? "text-success" : "text-warning"}`}>
-                              {job.matchScore}%
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                          </div>
-                        </div>
-                        {/* Mini match bar */}
-                        <div className="mt-2 w-full bg-muted rounded-full h-1">
-                          <div
-                            className={`h-1 rounded-full ${job.matchScore >= 70 ? "bg-success" : "bg-warning"}`}
-                            style={{ width: `${job.matchScore}%` }}
-                          />
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-              {/* Your current skills */}
-              <Card className="mt-6 border border-border/60">
-                <CardHeader>
-                  <CardTitle className="text-base">Your Current Skills</CardTitle>
+            {/* ── Left: Job selector (2/5 width) ── */}
+            <div className="lg:col-span-2 space-y-4">
+              {/* Your skills card */}
+              <Card className="border border-border/60">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-primary" />
+                    Your Skills ({profile?.skills.length ?? 0})
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {profile?.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-sm"
+                        className="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-medium"
                       >
                         {skill}
                       </span>
                     ))}
                   </div>
                   <Link to="/candidate/profile" className="block mt-3">
-                    <Button variant="outline" size="sm" className="gap-1.5">
-                      <FileText className="w-3.5 h-3.5" />
-                      Update Skills
+                    <Button variant="outline" size="sm" className="text-xs gap-1 h-7">
+                      <FileText className="w-3 h-3" /> Edit Skills
                     </Button>
                   </Link>
                 </CardContent>
               </Card>
+
+              {/* Job list */}
+              <Card className="border border-border/60">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Select a Target Job</CardTitle>
+                </CardHeader>
+                <CardContent className="p-3 space-y-2">
+                  {topJobs.map((job) => {
+                    const isSelected = selectedJob?.id === job.id;
+                    const total = job.requiredSkills.length;
+                    const matched = job.matchedSkills.length;
+                    const pct = total === 0 ? 0 : Math.round((matched / total) * 100);
+                    return (
+                      <button
+                        key={job.id}
+                        onClick={() => handleSelectJob(job)}
+                        className={`w-full text-left p-3 rounded-xl border transition-all ${
+                          isSelected
+                            ? "border-primary bg-primary/5 shadow-sm"
+                            : "border-border hover:border-primary/40 hover:bg-muted/30"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="min-w-0 flex-1">
+                            <p className={`font-medium text-sm truncate ${isSelected ? "text-primary" : ""}`}>
+                              {job.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{job.company}</p>
+                          </div>
+                          <div className="flex items-center gap-1 ml-2 shrink-0">
+                            <Star className={`w-3 h-3 ${job.matchScore >= 70 ? "text-success fill-success" : "text-warning fill-warning"}`} />
+                            <span className={`font-bold text-sm ${job.matchScore >= 70 ? "text-success" : "text-warning"}`}>
+                              {job.matchScore}%
+                            </span>
+                          </div>
+                        </div>
+                        {/* Skill coverage mini bar */}
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 bg-muted rounded-full h-1.5 overflow-hidden">
+                            <div
+                              className={`h-1.5 rounded-full ${pct >= 70 ? "bg-success" : pct >= 40 ? "bg-warning" : "bg-destructive/70"}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-muted-foreground shrink-0">{matched}/{total}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </CardContent>
+              </Card>
             </div>
 
-            {/* Skill gap details */}
-            <div>
-              {skillGap && selectedJobId ? (
-                <Card className="border border-border/60">
-                  <CardHeader>
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Target className="w-4 h-4 text-primary" />
-                      Gap Analysis: {topJobs.find((j) => j.id === selectedJobId)?.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <SkillGapCard result={skillGap} />
-                  </CardContent>
-                </Card>
+            {/* ── Right: Gap analysis (3/5 width) ── */}
+            <div className="lg:col-span-3">
+              {selectedJob && skillGap ? (
+                <div className="space-y-4">
+                  {/* Job header */}
+                  <Card className="border border-border/60">
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <h2 className="text-xl font-bold mb-0.5">{selectedJob.title}</h2>
+                          <p className="text-primary font-medium text-sm">{selectedJob.company}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{selectedJob.location} · {selectedJob.salary}</p>
+                        </div>
+                        <Badge
+                          className={`text-sm font-bold px-3 py-1 ${
+                            selectedJob.matchScore >= 70
+                              ? "bg-success/10 text-success border-success/30"
+                              : "bg-warning/10 text-warning border-warning/30"
+                          }`}
+                          variant="outline"
+                        >
+                          {selectedJob.matchScore}% Match
+                        </Badge>
+                      </div>
+                      <div className="mt-4">
+                        <CoverageBar
+                          matched={skillGap.matched.length}
+                          total={skillGap.matched.length + skillGap.missing.filter(s =>
+                            selectedJob.requiredSkills.includes(s)
+                          ).length}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Matched skills */}
+                  {skillGap.matched.length > 0 && (
+                    <Card className="border border-success/30 bg-success/5">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm flex items-center gap-2 text-success">
+                          <CheckCircle className="w-4 h-4" />
+                          Skills You Have ({skillGap.matched.length})
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-wrap gap-2">
+                          {skillGap.matched.map((s) => (
+                            <span
+                              key={s}
+                              className="flex items-center gap-1 px-3 py-1 bg-success/10 text-success border border-success/30 rounded-full text-sm font-medium"
+                            >
+                              <CheckCircle className="w-3 h-3" /> {s}
+                            </span>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Missing skills */}
+                  {skillGap.missing.length > 0 && (
+                    <Card className="border border-destructive/30 bg-destructive/5">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm flex items-center gap-2 text-destructive">
+                          <X className="w-4 h-4" />
+                          Skills to Develop ({skillGap.missing.length})
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-wrap gap-2">
+                          {skillGap.missing.map((s) => {
+                            const isRequired = selectedJob.requiredSkills.includes(s);
+                            return (
+                              <span
+                                key={s}
+                                className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium border ${
+                                  isRequired
+                                    ? "bg-destructive/10 text-destructive border-destructive/30"
+                                    : "bg-warning/10 text-warning border-warning/30"
+                                }`}
+                              >
+                                <X className="w-3 h-3" />
+                                {s}
+                                {!isRequired && (
+                                  <span className="text-xs opacity-70">(optional)</span>
+                                )}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Learning path */}
+                  {skillGap.learningPath.length > 0 && (
+                    <Card className="border border-border/60">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm flex items-center gap-2">
+                          <BookOpen className="w-4 h-4 text-primary" />
+                          Recommended Learning Path
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {skillGap.learningPath.map((item, i) => (
+                          <div
+                            key={item.skill}
+                            className="flex gap-3 p-3 bg-muted/40 rounded-xl border border-border hover:border-primary/30 transition-colors group"
+                          >
+                            {/* Step number */}
+                            <div className="w-7 h-7 rounded-full bg-primary/15 text-primary flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                              {i + 1}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <span className="font-semibold text-sm">{item.skill}</span>
+                                <Badge variant="secondary" className="text-xs h-5">
+                                  ~{item.timeEstimate}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-muted-foreground leading-relaxed">{item.resource}</p>
+                            </div>
+                            {item.url && (
+                              <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center border border-border hover:border-primary hover:bg-primary/10 transition-colors mt-0.5"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />
+                              </a>
+                            )}
+                          </div>
+                        ))}
+
+                        {/* Total time estimate */}
+                        <div className="mt-2 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                          <p className="text-xs font-medium text-primary flex items-center gap-1.5">
+                            <Target className="w-3.5 h-3.5" />
+                            Estimated time to close all gaps:{" "}
+                            <span className="font-bold">
+                              {skillGap.learningPath.length <= 2
+                                ? "2-4 weeks"
+                                : skillGap.learningPath.length <= 4
+                                ? "4-8 weeks"
+                                : "8-12 weeks"}
+                            </span>
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* All skills matched! */}
+                  {skillGap.missing.length === 0 && (
+                    <Card className="border border-success/40 bg-success/5">
+                      <CardContent className="p-6 text-center">
+                        <CheckCircle className="w-12 h-12 text-success mx-auto mb-3" />
+                        <h3 className="font-bold text-success text-lg mb-1">Perfect Match! 🎉</h3>
+                        <p className="text-sm text-muted-foreground">
+                          You have all the required skills for this role. Apply now!
+                        </p>
+                        <Link to="/candidate/jobs" className="block mt-4">
+                          <Button className="gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            Apply on Job Board
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
               ) : (
-                <Card className="border border-border/60">
-                  <CardContent className="p-12 text-center">
-                    <Target className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Select a job to see your skill gap</p>
+                <Card className="border border-border/60 h-full flex items-center justify-center min-h-[400px]">
+                  <CardContent className="text-center p-12">
+                    <Target className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+                    <p className="text-muted-foreground">Select a job from the left to see your skill gap</p>
                   </CardContent>
                 </Card>
               )}
-
-              {/* Quick links */}
-              <Card className="mt-6 border border-border/60">
-                <CardHeader>
-                  <CardTitle className="text-base">Learn & Grow</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {[
-                      { label: "freeCodeCamp", url: "https://freecodecamp.org", desc: "Free coding courses" },
-                      { label: "The Odin Project", url: "https://www.theodinproject.com", desc: "Full stack web dev" },
-                      { label: "fast.ai", url: "https://fast.ai", desc: "Practical deep learning" },
-                      { label: "Roadmap.sh", url: "https://roadmap.sh", desc: "Developer learning paths" },
-                    ].map((r) => (
-                      <a
-                        key={r.label}
-                        href={r.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center justify-between p-2.5 rounded-lg hover:bg-muted/50 border border-transparent hover:border-border transition-all group"
-                      >
-                        <div>
-                          <p className="text-sm font-medium">{r.label}</p>
-                          <p className="text-xs text-muted-foreground">{r.desc}</p>
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </a>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
         )}
