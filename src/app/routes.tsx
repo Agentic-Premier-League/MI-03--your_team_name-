@@ -9,6 +9,7 @@ import { AIMockInterview } from "./pages/candidate/AIMockInterview";
 import { CodingTests } from "./pages/candidate/CodingTests";
 import { PerformanceAnalytics } from "./pages/candidate/PerformanceAnalytics";
 import { CareerSuggestions } from "./pages/candidate/CareerSuggestions";
+import { JobBoard } from "./pages/candidate/JobBoard";
 import { RecruiterDashboard } from "./pages/recruiter/RecruiterDashboard";
 import { CandidateTable } from "./pages/recruiter/CandidateTable";
 import { CandidateDetail } from "./pages/recruiter/CandidateDetail";
@@ -46,6 +47,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRole="candidate">
             <ProfileSetup />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "jobs",
+        element: (
+          <ProtectedRoute allowedRole="candidate">
+            <JobBoard />
           </ProtectedRoute>
         ),
       },
@@ -164,6 +173,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRole="recruiter">
             <RecruiterNotifications />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <ProtectedRoute allowedRole="recruiter">
+            <RecruiterProfile />
           </ProtectedRoute>
         ),
       },

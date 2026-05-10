@@ -6,6 +6,17 @@ import { Input } from "../../components/ui/input";
 import { Bot, Github, Linkedin, Eye, EyeOff, CheckCircle, Sparkles } from "lucide-react";
 import { login } from "../../lib/candidateStore";
 
+/** Sets the ProtectedRoute-compatible session in sessionStorage */
+function setPortalSession(email: string, name: string, role: "candidate" | "recruiter" = "candidate") {
+  const session = {
+    id: role === "candidate" ? "candidate-001" : "recruiter-001",
+    role,
+    name,
+    email,
+  };
+  window.sessionStorage.setItem("careeros.portal.session", JSON.stringify(session));
+}
+
 type Mode = "login" | "signup";
 
 export function CandidateLogin() {
@@ -30,10 +41,12 @@ export function CandidateLogin() {
     await new Promise((r) => setTimeout(r, 600));
 
     if (isRecruiter) {
+      setPortalSession(email, name || email.split("@")[0], "recruiter");
       navigate("/recruiter/dashboard");
     } else {
-      // Store candidate session
+      // Store both candidate sessions (our store + ProtectedRoute)
       login(email, mode === "signup" ? name : undefined);
+      setPortalSession(email, name || email.split("@")[0], "candidate");
       navigate("/candidate/dashboard");
     }
     setLoading(false);
@@ -41,6 +54,7 @@ export function CandidateLogin() {
 
   const handleQuickDemo = () => {
     login("demo@hiregenie.ai", "Demo Candidate");
+    setPortalSession("demo@hiregenie.ai", "Demo Candidate", "candidate");
     navigate("/candidate/dashboard");
   };
 
