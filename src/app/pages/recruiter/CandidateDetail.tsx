@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router";
-import { Sidebar } from "../../components/ui/Sidebar";
+import { Sidebar } from "../../components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
-import { Sidebar } from "../../components/ui/Sidebar";
+import { Sidebar } from "../../components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";

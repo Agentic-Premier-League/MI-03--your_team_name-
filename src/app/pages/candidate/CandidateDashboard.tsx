@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
-import { Sidebar } from "../../components/ui/Sidebar";
+import { Sidebar } from "../../components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { AIScoreRing } from "../../components/AIScoreRing";
 import { Button } from "../../components/ui/button";

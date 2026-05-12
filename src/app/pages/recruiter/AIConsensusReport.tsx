@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { motion } from "motion/react";
-import { Sidebar } from "../../components/ui/Sidebar";
+import { Sidebar } from "../../components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { AIAgentCard } from "../../components/AIAgentCard";
 import { Button } from "../../components/ui/Button";

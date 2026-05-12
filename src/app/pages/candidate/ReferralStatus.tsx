@@ -1,4 +1,4 @@
-import { Sidebar } from "../../components/ui/Sidebar";
+import { Sidebar } from "../../components/ui/sidebar";
 import { Card } from "../../components/ui/Card";
 import { LayoutDashboard, FileText, Briefcase, Users, Video, Code, TrendingUp, Bell } from "lucide-react";
 

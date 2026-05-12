@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Sidebar } from "../../components/ui/Sidebar";
+import { Sidebar } from "../../components/ui/sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
