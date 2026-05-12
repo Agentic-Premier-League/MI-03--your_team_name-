@@ -24,7 +24,7 @@ export function RecruiterProfile() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch('/api/recruiter/profile')
+    fetch(`${import.meta.env.VITE_API_URL || ''}/api/recruiter/profile`)
       .then(res => res.json())
       .then(data => {
         if (data) {
@@ -47,7 +47,7 @@ export function RecruiterProfile() {
     setIsSaving(true);
     setMessage("");
     try {
-      const res = await fetch('/api/recruiter/profile', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/recruiter/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

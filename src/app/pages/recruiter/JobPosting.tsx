@@ -28,7 +28,7 @@ export function JobPosting() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/jobs', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/jobs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

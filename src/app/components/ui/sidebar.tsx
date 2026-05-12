@@ -722,7 +722,7 @@ function AppSidebar({ items, logo, title }: AppSidebarProps) {
   const [userName, setUserName] = React.useState("Loading...");
 
   const fetchProfile = () => {
-    fetch('/api/recruiter/profile')
+    fetch(`${import.meta.env.VITE_API_URL || ''}/api/recruiter/profile`)
       .then(res => res.json())
       .then(data => {
         if (data && data.name) {

@@ -11,11 +11,12 @@ const PORT = process.env.PORT || 5001;
 // Connect to MongoDB
 connectDB();
 
-app.use(cors());
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || '*',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 app.use(express.json());
-
-const distPath = path.resolve(__dirname, '../dist');
-app.use(express.static(distPath));
 
 // Seed Initial Candidates if empty
 async function seedCandidates() {
@@ -100,8 +101,9 @@ app.patch('/api/candidates/:id', async (req, res) => {
   }
 });
 
-app.get(/(.*)/, (req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
+// Root endpoint for health check
+app.get('/', (req, res) => {
+  res.send('API is running...');
 });
 
 app.listen(PORT, () => {

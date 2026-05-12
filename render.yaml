@@ -3,8 +3,8 @@ services:
     name: careeros
     env: node
     plan: free
-    buildCommand: npm install ; npm --prefix server install ; npm run build
-    startCommand: npm --prefix server start
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
     envVars:
       - key: MONGO_URI
         sync: false

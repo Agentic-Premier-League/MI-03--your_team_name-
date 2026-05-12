@@ -19,7 +19,7 @@ export function RecruiterDashboard() {
   const [candidates, setCandidates] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/candidates')
+    fetch(`${import.meta.env.VITE_API_URL || ''}/api/candidates`)
       .then(res => res.json())
       .then(data => setCandidates(data))
       .catch(err => console.error("Failed to fetch candidates", err));
