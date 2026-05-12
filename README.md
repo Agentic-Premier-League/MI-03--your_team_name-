@@ -1,288 +1,81 @@
-# AI Candidate Experience Platform 🚀
+# HireGenie - AI-Powered Autonomous Hiring Platform
 
-An AI-powered Candidate Experience MVP built for the Agentic Premier League Hackathon using the existing MI-03 repository architecture.
+Welcome to **HireGenie**, a futuristic, AI-powered autonomous hiring platform designed for the GDG Hackathon. HireGenie seamlessly bridges the gap between recruiters and top talent using multi-agent consensus, skill gap analysis, and an intuitive, modern SaaS dashboard.
 
-This platform focuses entirely on improving the **candidate journey** using AI-driven recommendations, resume analysis, skill-gap insights, and intelligent job matching.
+## 🚀 Core Features
 
----
+- **Recruiter Dashboard**: An immersive, glassmorphism-styled dashboard for recruiters to view metrics, jobs, and candidates.
+- **Candidate Portal**: A dedicated space for candidates to track applications, view analytics, and access career suggestions.
+- **Job Posting System**: Easily create and manage job postings with detailed requirements.
+- **AI-Powered Candidate-Job Matching**: Intelligent scoring based on resume parsing and job requirements.
+- **Candidate Ranking**: Candidates are ranked dynamically based on their skills, AI consensus score, and overall suitability.
+- **Smart Profile & Skill Gap Analysis**: Detailed breakdown of candidate skills with actionable resources to bridge skill gaps.
+- **Agentic Workflow Automation**: Automated stages for resume review, technical screening, and HR review.
+- **Real-Time Hiring Pipeline Simulation**: Move candidates through different stages (applied, shortlisted, interviewed, hired).
+- **Responsive Modern UI**: Built with React, Tailwind CSS, and Framer Motion for beautiful, fluid animations.
 
-# ✨ Features
+## 🛠️ Tech Stack
 
-## 👤 Candidate Authentication
-- Secure Signup/Login
-- Session/JWT-based authentication
-- Candidate onboarding flow
+- **Frontend**: React.js, Vite, Tailwind CSS, Framer Motion, Radix UI, Recharts, Lucide React
+- **Backend**: Node.js, Express.js, MongoDB (Mongoose)
+- **Deployment & Tooling**: Render, PostCSS, ESLint, Git
 
-## 📄 Resume Upload & AI Parsing
-- Upload PDF/DOC resumes
-- Extract:
-  - Skills
-  - Experience
-  - Education
-  - Keywords
-- AI-generated improvement suggestions
+## 📂 Project Structure
 
-## 🤖 AI Job Recommendations
-- Personalized job recommendations
-- Match scoring system
-- Smart skill-job mapping
-
-## 🎯 Skill Gap Analysis
-- Compare candidate profile with job requirements
-- Missing skill identification
-- Suggested learning roadmap
-
-## ⚡ One-Click Apply
-- Apply instantly to jobs
-- Duplicate application prevention
-- Application history management
-
-## 📊 Candidate Dashboard
-- Recommended jobs
-- Profile completion
-- Application tracking
-- AI insights
-
-## 💬 AI Career Assistant
-- Interview preparation
-- Resume guidance
-- Career recommendations
-- Skill suggestions
-
-## 📌 Application Tracking
-Track applications through:
-- Applied
-- Under Review
-- Interview
-- Selected
-- Rejected
-
----
-
-# 🏗️ Tech Stack
-
-## Frontend
-- React.js
-- Tailwind CSS
-- Axios
-- React Router
-
-## Backend
-- Node.js
-- Express.js
-
-## Database
-- MongoDB
-
-## AI/ML Features
-- Gemini API / OpenAI API
-- Resume parsing
-- NLP-based skill extraction
-- AI recommendation engine
-
-## Authentication
-- JWT Authentication
-- bcrypt password hashing
-
-## Deployment
-- Render / Vercel / Railway
-
----
-
-# 📂 Project Structure
-
-```bash
-MI-03--your_team_name-
-│
-├── client/                 # Frontend
-│   ├── components/
-│   ├── pages/
-│   ├── services/
-│   └── utils/
-│
-├── server/                 # Backend
-│   ├── controllers/
-│   ├── routes/
-│   ├── models/
-│   ├── middleware/
-│   └── services/
-│
-├── seed/                   # Mock job data
-├── uploads/                # Resume uploads
-├── README.md
-└── package.json
+```
+├── server/                 # Express backend
+│   ├── index.js            # Main entry point for the API
+│   ├── db.js               # MongoDB connection setup
+│   └── models/             # Mongoose schemas (Candidate, Job)
+├── src/                    # React frontend
+│   ├── app/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/          # Dashboard & application pages
+│   │   └── lib/            # State management and utilities
+│   ├── main.tsx            # React application entry
+│   └── index.css           # Global styles and Tailwind configuration
+├── package.json            # Project dependencies and scripts
+└── vite.config.ts          # Vite build configuration
 ```
 
----
+## ⚙️ Installation & Setup
 
-# ⚙️ Installation Guide
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Omshivhare45/HireGinie-GDG-hackathon.git
+   cd HireGinie-GDG-hackathon
+   ```
 
-## 1️⃣ Clone Repository
+2. **Install frontend dependencies:**
+   ```bash
+   npm install
+   ```
 
-```bash
-git clone https://github.com/Agentic-Premier-League/MI-03--your_team_name-.git
-```
+3. **Install backend dependencies:**
+   ```bash
+   cd server
+   npm install
+   cd ..
+   ```
 
----
+4. **Environment Variables:**
+   Create a `.env` file in the `server` directory and add your MongoDB connection string:
+   ```env
+   MONGO_URI=your_mongodb_connection_string
+   PORT=5001
+   ```
 
-## 2️⃣ Navigate to Project
+5. **Run the Application Locally:**
+   Start both the frontend and backend servers concurrently:
+   ```bash
+   # Start the frontend
+   npm run dev
 
-```bash
-cd MI-03--your_team_name-
-```
+   # Open a new terminal and start the backend
+   npm start
+   ```
 
----
+6. Open `http://localhost:5173` to view the platform!
 
-# 🖥️ Frontend Setup
-
-## Install Dependencies
-
-```bash
-cd client
-npm install
-```
-
-## Start Frontend
-
-```bash
-npm run dev
-```
-
-Frontend runs on:
-
-```bash
-http://localhost:5173
-```
-
----
-
-# 🛠️ Backend Setup
-
-## Install Dependencies
-
-```bash
-cd server
-npm install
-```
-
-## Create `.env` File
-
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection
-JWT_SECRET=your_secret_key
-GEMINI_API_KEY=your_api_key
-```
-
-## Start Backend
-
-```bash
-npm run dev
-```
-
-Backend runs on:
-
-```bash
-http://localhost:5000
-```
-
----
-
-# 🗄️ Seed Mock Jobs
-
-To populate demo jobs:
-
-```bash
-npm run seed
-```
-
-This ensures candidate-side features work even without recruiter input.
-
----
-
-# 🔥 AI Features Workflow
-
-## Resume Analysis
-1. Candidate uploads resume
-2. AI extracts:
-   - Skills
-   - Experience
-   - Education
-3. System generates recommendations
-
----
-
-## Job Recommendation Engine
-- Matches candidate skills with jobs
-- Calculates compatibility score
-- Suggests best-fit opportunities
-
----
-
-## Skill Gap Analysis
-- Identifies missing skills
-- Suggests learning/improvement areas
-
----
-
-# 📸 Demo Flow
-
-```text
-Signup → Upload Resume → AI Analysis →
-Recommended Jobs → Match Score →
-One-Click Apply → Track Status →
-AI Career Assistant
-```
-
----
-
-# 🚀 Deployment
-
-## Frontend
-Deploy using:
-- Vercel
-- Netlify
-
-## Backend
-Deploy using:
-- Render
-- Railway
-
-## Database
-- MongoDB Atlas
-
----
-
-# 🧠 Future Improvements
-
-- Real recruiter portal
-- AI mock interviews
-- Voice-based assistant
-- ATS scoring
-- Real-time notifications
-- LinkedIn profile import
-
----
-
-# 👥 Team
-
-Built for:
-## Agentic Premier League Hackathon
-
-Focused on creating a smarter and more personalized hiring experience for candidates.
-
----
-
-# 📜 License
-
-MIT License
-
----
-
-# ⭐ Final Goal
-
-Deliver a production-ready AI-powered Candidate Experience Platform that demonstrates:
-- AI integration
-- Smart hiring workflows
-- Real-world usability
-- End-to-end candidate journey optimization
+## 💡 Team & Contributors
+Developed for the GDG Hackathon using an agentic AI workflow with Cursor & Antigravity.
